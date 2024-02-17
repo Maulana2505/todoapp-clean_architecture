@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/core/utils/locator.dart';
 // import 'package:todo_app/core/utils/locator.dart';
 import 'package:todo_app/core/utils/mediaquery.dart';
+import 'package:todo_app/data/models/todo_model.dart';
 import 'package:todo_app/presentation/Bloc/auth/auth_bloc.dart';
 import 'package:todo_app/presentation/Bloc/auth/auth_event.dart';
 import 'package:todo_app/presentation/Bloc/todo/todo_bloc.dart';
@@ -22,10 +23,12 @@ class DashboardPage extends StatefulWidget {
 
 class _DashboardPageState extends State<DashboardPage> {
   final TextEditingController _title = TextEditingController();
+  List<TodoModel> massage = [];
 
   @override
   void dispose() {
     // TODO: implement dispose
+    
     super.dispose();
     _title.dispose();
   }
@@ -37,7 +40,7 @@ class _DashboardPageState extends State<DashboardPage> {
         if (state is TodoSuccesAddState ||
             state is TodoSuccesUpdateState ||
             state is TodoSuccesDeleteState) {
-          Future.delayed(const Duration(seconds: 2), () {
+          Future.delayed(const Duration(seconds: 1), () {
             sl<TodoBloc>().add(TodoLoadDataEvent());
           });
         }
@@ -110,42 +113,42 @@ class _DashboardPageState extends State<DashboardPage> {
         }
         if (state is TodoErorState) {
           return Center(
-            child: Text(state.msg.toString()),
+            child: Text(state.msg!,style: TextStyle(color: Colors.white70)),
           );
         }
         if (state is TodoSuccesGetState) {
-          return SingleChildScrollView(
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: state.todoentity!.length,
-              itemBuilder: (context, index) {
-                var data = state.todoentity![index];
-                return Card(
-                  child: ListTile(
-                    leading: IconButton(
+          return Expanded(
+            child: SingleChildScrollView(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: state.todoentity!.length,
+                itemBuilder: (context, index) {
+                  var data = state.todoentity![index];
+                  return Card(
+                    child: ListTile(
+                      leading: IconButton(
+                          onPressed: () {
+                            sl<TodoBloc>().add(
+                                TodoUpdateDataEvent(data.id!, !data.isDone!));
+                          },
+                          icon: data.isDone! == false
+                              ? const Icon(Icons.rectangle_outlined)
+                              : const Icon(Icons.check_box_outlined)),
+                      title: Text(data.title.toString()),
+                      trailing: IconButton(
                         onPressed: () {
-                          sl<TodoBloc>().add(
-                              TodoUpdateDataEvent(data.id!, !data.isDone!));
+                          sl<TodoBloc>().add(TodoDeleteDataEvent(data.id!));
                         },
-                        icon: data.isDone! == false
-                            ? const Icon(Icons.rectangle_outlined)
-                            : const Icon(Icons.check_box_outlined)),
-                    title: Text(data.title.toString()),
-                    trailing: IconButton(
-                      onPressed: () {
-                        sl<TodoBloc>().add(TodoDeleteDataEvent(data.id!));
-                      },
-                      icon: const Icon(Icons.delete_rounded),
+                        icon: const Icon(Icons.delete_rounded),
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           );
         }
-        return Center(
-          child: Text(state.msg.toString()),
-        );
+        return Container();
       },
     );
   }

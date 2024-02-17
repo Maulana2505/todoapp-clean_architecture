@@ -10,7 +10,6 @@ class TodoApi {
 
   var apiUrl = Constant.baseUrl;
 
-  final pref = SharedPreference();
 
   Future addTodo(String title) async {
     final ids = await sl<SharedPreference>().getid();
@@ -40,7 +39,7 @@ class TodoApi {
       return response.data;
     }
     return response.data;
-    // print(data.toString());
+    
     
   }
 

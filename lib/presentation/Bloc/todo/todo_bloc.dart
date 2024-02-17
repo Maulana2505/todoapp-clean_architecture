@@ -33,7 +33,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
   }
 
   void _onAddData(TodoAddDataEvent event, Emitter<TodoState> emitter) async {
-    emitter(TodoLoadingState());
+    // emitter(TodoLoadingState());
     final dataadd = await addTodoUsecase(event.title!);
     dataadd.fold((l) => emitter(TodoErorState(l.toString())),
         (r) => emitter(TodoSuccesAddState()));
